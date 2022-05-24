@@ -127,10 +127,10 @@ adelie <- penguins%>%
 cor.test(x = adelie$bill_length_mm, y = adelie$bill_depth_mm)
 
 ```
+So this output tells us that R is confident that there is a correlation (p-value), but it is a rather weak correlation (the correlation coefficient is closer to zero than to 1 or -1). 
 
 
-
-
+<mark>**Exercise 3: Calculate the corrleation between bill length and bill depth for the other two species. Remember to check for normality of both variables, if one of them is not normally distributed you have to choose another test (just google for non-parametric correlation test). **</mark>
 
 - Comparison between different categories
 - Relations between features
