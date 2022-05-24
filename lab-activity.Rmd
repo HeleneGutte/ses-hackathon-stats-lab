@@ -30,10 +30,17 @@ penguins <- palmerpenguins::penguins
 <br>
 
 ## Introducing the dataset
-The palmer penguins data set contains data on the features of three different penguin species. You can have a look at the different variables using the function `head()` 
+The palmer penguins data set contains data on the features of three different penguin species. You can have a look at the different variables using the function `head()`:
 
 ```{r}
 head(penguins)
+```
+
+Before even starting to explore the data set you should be aware of the different data types you are working with. In the penguins data set we can find two different types of data: discrete or categorical data and continuous data. Discrete data are classified in penguins as factors (e.g. species, island and sex). The other variables are continuous and belong either to the class double or integer. 
+
+`r shiny::icon("star")` Tip 1: Check for missing values (NAs) or potential outliers using the `summary()` function. 
+```{r}
+summary(penguins)
 ```
 
 
@@ -41,21 +48,90 @@ head(penguins)
 
 We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context. 
 The basic research question driving the exploration is: What are differences / similarities between the states (penguin species)? Are there spatio-temporal patterns / changes? 
-Before starting the analysis it is always useful to do some basic data exploration / visualization exercises to get a "feeling" for your data -> How does it look like? For this we install the tidyverse packages, which includes various other packages useful for visualization (ggplot2), data wrangling (dplyr, tidyr)...
+Before starting the analysis it is always useful to do some basic data exploration / visualization exercises to get a "feeling" for your data -> How does it look like? 
 
-```{r}
+For this we install the tidyverse packages, which includes various other packages useful for visualization (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others. 
+
+```{r, warning = FALSE, message = FALSE}
 #install.packages(tidyverse)
 library(tidyverse)
 
+ggplot(data = penguins, aes(x = penguins$species, y = penguins$bill_length_mm))+
+  geom_boxplot()+
+  xlab("Species")+ ylab("Bill length (mm)")
 
+ggplot(data = penguins)+
+  geom_histogram(aes(x = bill_length_mm, colour = species, fill = species))+
+  xlab("Bill length (mm)") + ylab("Frequency") +
+  labs(fill = "Species", colour = "Species")
+  
 ```
 
+<mark>**Exercise 1: Now you can explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **</mark>
 
 ## Preliminary data exploration
 
 Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
 - Identifying key features (mean, variance, normality/distribution of the data)
+
+Now that we have explored and visualized the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and it´s standard deviation. 
+
+`r shiny::icon("star")` Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation or variance. Without the variation a mean is meaningless. 
+
+
+```{r}
+mean(penguins$bill_length_mm, na.rm = TRUE)
+sd(penguins$bill_length_mm, na.rm = TRUE)
+```
+
+Now we know the mean bill length and its sd across all three penguin species, will those values change if we calculate the same measures per species? 
+We are using the tidyverse syntax in the following, you could do the same calculations using base R, its just a matter of convenience...
+
+```{r}
+penguins%>%
+  group_by(species)%>%
+  summarise("mean_bill_length" = mean(bill_length_mm, na.rm = TRUE),
+            "sd_bill_length" = sd(bill_length_mm, na.rm = TRUE))
+```
+
+For non-parametric and discrete data it is more common to use parameters such as the median or quartiles. It is also common to use the median in case of skewed data
+
+<mark>**Exercise 2: Calculate the median bill length per species and compare it the mean values. Is there a difference? Can you explain why there is a difference (or not)? **</mark>
+
+Another part of descriptive statistics is to identify correlations between different variables. 
+
+`r shiny::icon("star")` Tip 3: Correlation ≠ Causation!
+
+We first visually explore the relationship between two variables: 
+```{r, warning = FALSE}
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm))+
+  geom_point()+
+  labs(x = "Bill length (mm)", y = "Bill depth (mm)")
+```
+
+The points scatter over the entire plot, but it seems like there is a slightly positive correlation between bill length and bill depth. We can validate this by using a correlation test as Pearson´s correlation coefficient test, this test is a parametric test, so we have to check that both our variables are normally distributed (their histograms should have a bell-shape). We already did this for the bill length, so let´s check the bill depth 
+
+```{r, message = FALSE}
+ggplot(data = penguins)+
+  geom_histogram(aes(x = bill_depth_mm, colour = species, fill = species))+
+  xlab("Bill depth (mm)") + ylab("Frequency")+
+  labs(colour = "Species", fill = "Species")
+```
+
+The individual species have a bell-shaped distribution regarding the bill length. For the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution. 
+For the normally distributed species we now apply Person´s r to test for a correlation between the two variables: 
+```{r}
+adelie <- penguins%>%
+  filter(species == "Adelie")
+cor.test(x = adelie$bill_length_mm, y = adelie$bill_depth_mm)
+
+```
+
+
+
+
+
 - Comparison between different categories
 - Relations between features
 - Which places or groups have similar characteristics (multivariate analysis)
