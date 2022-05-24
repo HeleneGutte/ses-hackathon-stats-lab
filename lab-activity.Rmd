@@ -1,0 +1,47 @@
+---
+title: "lab-exercise"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Outline
+
+1. Get Data and Libraries
+2. Introducing the dataset
+3. Framing a research  question
+4. Preliminary data exploration
+
+<br>
+
+## Get Data and Libraries
+
+We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections.
+
+```{r get data}
+# install.packages("remotes")
+remotes::install_github("allisonhorst/palmerpenguins")
+```
+
+
+<br>
+
+## Introducing the dataset
+
+## Framing a research question
+
+## Preliminary data exploration
+
+Following teh steps outlined in Chapter 18 (`SES Probelmes and Questions`):
+
+- Identifying key features (mean, variance, normality/distribution of the data)
+- Comparison between different categories
+- Relations between features
+- Which places or groups have similar characteristics (multivariate analysis)
+- How do features change across years (time series analysis)
+
+
+
+
