@@ -23,18 +23,37 @@ We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/pal
 ```{r get data}
 # install.packages("remotes")
 remotes::install_github("allisonhorst/palmerpenguins")
+penguins <- palmerpenguins::penguins
 ```
 
 
 <br>
 
 ## Introducing the dataset
+The palmer penguins data set contains data on the features of three different penguin species. You can have a look at the different variables using the function `head()` 
+
+```{r}
+head(penguins)
+```
+
 
 ## Framing a research question
 
+We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context. 
+The basic research question driving the exploration is: What are differences / similarities between the states (penguin species)? Are there spatio-temporal patterns / changes? 
+Before starting the analysis it is always useful to do some basic data exploration / visualization exercises to get a "feeling" for your data -> How does it look like? For this we install the tidyverse packages, which includes various other packages useful for visualization (ggplot2), data wrangling (dplyr, tidyr)...
+
+```{r}
+#install.packages(tidyverse)
+library(tidyverse)
+
+
+```
+
+
 ## Preliminary data exploration
 
-Following teh steps outlined in Chapter 18 (`SES Probelmes and Questions`):
+Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
 - Identifying key features (mean, variance, normality/distribution of the data)
 - Comparison between different categories
