@@ -77,7 +77,7 @@ Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
 - Identifying key features (mean, variance, normality/distribution of the data)
 
-Now that we have explored and visualised the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and it´s standard deviation. 
+Now that we have explored and visualised the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and its standard deviation. 
 
 `r shiny::icon("star")` Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation (sd) or variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. 
 
@@ -103,7 +103,7 @@ For non-parametric and discrete data it is more common to use parameters such as
 
 Another part of descriptive statistics is to identify correlations between different variables. 
 
-`r shiny::icon("star")` Tip 3: Correlation ≠ Causation!
+`r shiny::icon("star")` Tip 3: Correlation ≠ Causation! This is one of the most important things to keep in mind when doing data analysis! Therefore, you should always be careful in your wording when reporting relationships. Avoid sentences like "Higher values of X mean higher values of Y". Rather use "Higher values of X go along with higher values of Y". 
 
 We first visually explore the relationship between two variables: 
 ```{r, warning = FALSE}
