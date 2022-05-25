@@ -38,7 +38,9 @@ head(penguins)
 
 Before even starting to explore the data set you should be aware of the different data types you are working with. In the penguins data set we can find two different types of data: discrete or categorical data and continuous data. Discrete data are classified in penguins as factors (e.g. species, island and sex). The other variables are continuous and belong either to the class double or integer. 
 
-`r shiny::icon("star")` Tip 1: Check for missing values (NAs) or potential outliers using the `summary()` function. 
+`r shiny::icon("star")` Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical values. Other programmes, such as STATA, considers "." as infinity. Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occuring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. 
+
+
 ```{r}
 summary(penguins)
 ```
