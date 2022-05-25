@@ -87,7 +87,7 @@ mean(penguins$bill_length_mm, na.rm = TRUE)
 sd(penguins$bill_length_mm, na.rm = TRUE)
 ```
 
-Now we know the mean bill length and its sd across all three penguin species, will those values change if we calculate the same measures per species? 
+Now we know the mean bill length and its sd across all three penguin species. Will those values change if we calculate the same measures per species? 
 We are using the tidyverse syntax in the following, you could do the same calculations using base R, its just a matter of convenience...
 
 ```{r}
@@ -97,7 +97,7 @@ penguins%>%
             "sd_bill_length" = sd(bill_length_mm, na.rm = TRUE))
 ```
 
-For non-parametric and discrete data it is more common to use parameters such as the median or quartiles. It is also common to use the median in case of skewed data
+For non-parametric and discrete data it is more common to use parameters such as the median or quartiles. It is also common to use the median in case of skewed data. Skewed data implies that your data is not normally distributed (no bell shape) but that it has a "tail" which is longer on the left (more values smaller than the mean) or write (more values higher than the mean). 
 
 <mark>**Exercise 2: Calculate the median bill length per species and compare it the mean values. Is there a difference? Can you explain why there is a difference (or not)? **</mark>
 
