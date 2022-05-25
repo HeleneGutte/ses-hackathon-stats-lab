@@ -1,35 +1,55 @@
 ---
-title: "lab-exercise"
-output: html_document
+output:
+  html_document:
+    css: "style.css"
+    includes:
+      in_header: hero-image.html
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+## palette based on website styling
+pal <- c(
+  mustard = "#d3a858",
+  lightestgreen = "#89b59c",
+  bluegreen = "#364552",
+  lightblue = "#a0c0c4",
+  lightgreen = "#517862",
+  darkgreen = "#486450",
+  grey = "#a7a7a7",
+  darkgrey = "#333333"
+)
 ```
 
+<br>
+ 
 ## Outline
 
-1. Get Data and Libraries
-2. Introducing the dataset
-3. Framing a research  question
-4. Preliminary data exploration
+[1. Get Data and Libraries](#data-libs) <br>
+[2. Introducing the dataset](#data-intro) <br>
+[3. Framing a research  question](#frame-rq) <br>
+[4. Preliminary data exploration](#prelim-explor) <br>
+[5. Intro to some multivariate methods](#multivariate) <br>
+[6. A few notes on time series](#time-series) <br>
 
 <br>
 
-## Get Data and Libraries
+## Get Data and Libraries {#data-libs}
 
 We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections.
 
 ```{r get data}
 # install.packages("remotes")
-remotes::install_github("allisonhorst/palmerpenguins")
+# remotes::install_github("allisonhorst/palmerpenguins")
 penguins <- palmerpenguins::penguins
 ```
 
 
 <br>
 
-## Introducing the dataset
+## Introducing the dataset {#data-intro}
+
 The palmer penguins data set contains data on the features of three different penguin species. You can have a look at the different variables using the function `head()`:
 
 ```{r}
@@ -38,7 +58,9 @@ head(penguins)
 
 Before even starting to explore the data set you should be aware of the different data types you are working with. In the penguins data set we can find two different types of data: discrete or categorical data and continuous data. Discrete data are classified in penguins as factors (e.g. species, island and sex). The other variables are continuous and belong either to the class double or integer. 
 
-`r shiny::icon("star")` Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical values. Other programmes, such as STATA, considers "." as infinity. Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occuring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. 
+<p style="color:#364552; background-color:#a0c0c4"> 
+`r shiny::icon("star")` **Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical values. Other programmes, such as STATA, considers "." as infinity. Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occuring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. **
+</p>
 
 
 ```{r}
@@ -46,7 +68,7 @@ summary(penguins)
 ```
 
 
-## Framing a research question
+## Framing a research question {#frame-rq}
 
 We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context. 
 The basic research question driving the exploration is: What are differences / similarities between the states (penguin species)? Are there spatio-temporal patterns / changes? 
@@ -62,16 +84,22 @@ ggplot(data = penguins, aes(x = penguins$species, y = penguins$bill_length_mm))+
   geom_boxplot()+
   xlab("Species")+ ylab("Bill length (mm)")
 
-ggplot(data = penguins)+
-  geom_histogram(aes(x = bill_length_mm, colour = species, fill = species))+
+ggplot(data = penguins) +
+  geom_histogram(
+    aes(x = bill_length_mm, colour = species, fill = species), 
+    position = position_identity(), alpha = 0.9
+  ) +
+  scale_fill_manual(values = as.character(pal[1:3])) +
+  scale_colour_manual(values = as.character(pal[1:3])) +
   xlab("Bill length (mm)") + ylab("Frequency") +
   labs(fill = "Species", colour = "Species")
-  
 ```
 
-<mark>**Exercise 1: Now you can explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **</mark>
+<p style="color:#333333; background-color:#d3a95a"> 
+`r shiny::icon("book-open")` **Exercise 1: Now you can explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **
+</p>
 
-## Preliminary data exploration
+## Preliminary data exploration {#prelim-explor}
 
 Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
@@ -79,8 +107,9 @@ Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
 Now that we have explored and visualised the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and its standard deviation. 
 
-`r shiny::icon("star")` Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation (sd) or variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. 
-
+<p style="color:#364552; background-color:#a0c0c4"> 
+`r shiny::icon("star")` **Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation (sd) or variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. **
+</p>
 
 ```{r}
 mean(penguins$bill_length_mm, na.rm = TRUE)
@@ -99,16 +128,20 @@ penguins%>%
 
 For non-parametric and discrete data it is more common to use parameters such as the median or quartiles. It is also common to use the median in case of skewed data. Skewed data implies that your data is not normally distributed (no bell shape) but that it has a "tail" which is longer on the left (more values smaller than the mean) or write (more values higher than the mean). 
 
-<mark>**Exercise 2: Calculate the median bill length per species and compare it the mean values. Is there a difference? Can you explain why there is a difference (or not)? **</mark>
+<p style="color:#333333; background-color:#d3a95a"> 
+`r shiny::icon("book-open")` **Exercise 2: Calculate the median bill length per species and compare it the mean values. Is there a difference? Can you explain why there is a difference (or not)? **
+</p>
 
 Another part of descriptive statistics is to identify correlations between different variables. 
 
-`r shiny::icon("star")` Tip 3: Correlation ≠ Causation! This is one of the most important things to keep in mind when doing data analysis! Therefore, you should always be careful in your wording when reporting relationships. Avoid sentences like "Higher values of X mean higher values of Y". Rather use "Higher values of X go along with higher values of Y". 
+<p style="color:#364552; background-color:#a0c0c4"> 
+`r shiny::icon("star")` **Tip 3: Correlation ≠ Causation! This is one of the most important things to keep in mind when doing data analysis! Therefore, you should always be careful in your wording when reporting relationships. Avoid sentences like "Higher values of X mean higher values of Y". Rather use "Higher values of X go along with higher values of Y". **
+</p>
 
 We first visually explore the relationship between two variables: 
 ```{r, warning = FALSE}
-ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm))+
-  geom_point()+
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point() +
   labs(x = "Bill length (mm)", y = "Bill depth (mm)")
 ```
 
@@ -116,9 +149,15 @@ The points scatter over the entire plot, but it seems like there is a slightly p
 
 ```{r, message = FALSE}
 ggplot(data = penguins)+
-  geom_histogram(aes(x = bill_depth_mm, colour = species, fill = species))+
-  xlab("Bill depth (mm)") + ylab("Frequency")+
-  labs(colour = "Species", fill = "Species")
+  geom_histogram(
+    aes(x = bill_depth_mm, colour = species, fill = species), 
+    position = position_identity(),
+    alpha = 0.6
+  ) +
+  xlab("Bill depth (mm)") + ylab("Frequency") +
+  labs(colour = "Species", fill = "Species") +
+  scale_fill_manual(values = as.character(pal[1:3])) +
+  scale_colour_manual(values = as.character(pal[1:3]))
 ```
 
 The individual species have a bell-shaped distribution regarding the bill length. For the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution. 
@@ -139,6 +178,10 @@ Approaches in this category attempt to measure how similar two or more objects a
 
 Explore PCA, kmeans, and clustering below using the `vegan` package and a dataset it contains called `dune`. For an in-depth tutorial on multivariate analysis and ordinal methods with the `vegan` R packages, see [this vignette](https://www.mooreecology.com/uploads/2/4/2/1/24213970/vegantutor.pdf)
 
+<p style="color:#333333; background-color:#d3a95a"> 
+`r shiny::icon("book-open")` **Exercise 3: Before beginning, can you apply what you learned above to familiarize yourself with the data types and dataset  structure? What are the variables in this data set (hint: check the R documentation)?**
+</p>
+
 ```{r}
 # install.packages("vegan")
 library(vegan)
@@ -147,7 +190,7 @@ library(vegan)
 data(dune) 
 data(dune.env)
 
-## PCA
+## PCA and kmeans
 fit <- kmeans(dune[,-1], 3, iter.max = 1000)
 table(fit$cluster)
 pca <- prcomp(dune[,-1], scale = TRUE)
@@ -162,11 +205,12 @@ cluc_average <- hclust(dis, "average")
 plot(cluc_complete)
 ```
 
-<mark>**Exercise 3: ? **</mark>
-
+<p style="color:#333333; background-color:#d3a95a"> 
+`r shiny::icon("book-open")` **Exercise 4: ? **
+</p>
 
 Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) for the following exercises, and test similarities across a number of metro-areas in Europe.
-```{r cities dataset}
+```{r cities dataset, eval = FALSE}
 # install.packages("eurostat")
 library(eurostat)
 var_ids <- c(
@@ -187,10 +231,15 @@ city_data_wide <- city_data %>%
   filter(time == 2014, !cities %in% c(eu_countries$name, "Schweiz/Suisse"))
 ```
 
+<br>
 
-`r shiny::icon("star")` Tip ##: Variables should be on quasi-identical scale, otherwise variables with the largest range will dominate the outcome; normalize the data (usually between zero and one) to avoid this.
+<p style="color:#364552; background-color:#a0c0c4"> 
+`r shiny::icon("star")` **Tip 4: Variables should be on quasi-identical scale, otherwise variables with the largest range will dominate the outcome; normalize the data (usually between zero and one) to avoid this.**
+</p>
 
-```{r}
+<br>
+
+```{r, eval = FALSE}
 ## remove variables and cities where have NAs mostly
 keep_cols <- names(colSums(is.na(city_data_wide))[which(colSums(is.na(city_data_wide)) < 370)])
 
@@ -208,7 +257,7 @@ df0 <- city_data_wide %>%
 ```
 
 
-```{r hierarchical clustering}
+```{r hierarchical clustering, eval = FALSE}
 df <- tibble::column_to_rownames(df0, "cities")
 distance_mat <- dist(df, method = "euclidean")
 
@@ -217,10 +266,12 @@ set.seed(240)
 modHclus <- hclust(distance_mat, method = "average")
 
 ## plotting dendrogram
+# install.packages("factoextra")
+library(factoextra)
 fviz_dend(modHclus, cex = 0.3)
 ```
 
-```{r pca}
+```{r pca, eval = FALSE}
 df <- df0 %>% 
   pivot_longer(cols = !matches("cities")) %>% 
   pivot_wider(names_from = cities, values_from = value) %>% 
