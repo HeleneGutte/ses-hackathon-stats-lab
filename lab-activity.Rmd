@@ -50,9 +50,9 @@ summary(penguins)
 
 We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context. 
 The basic research question driving the exploration is: What are differences / similarities between the states (penguin species)? Are there spatio-temporal patterns / changes? 
-Before starting the analysis it is always useful to do some basic data exploration / visualization exercises to get a "feeling" for your data -> How does it look like? 
+Before starting the analysis it is always useful to do some basic data exploration / visualisation exercises to get a "feeling" for your data -> How does it look like? These descriptive statistics are not only valuable for yourself and to build your hypothesis but they are also commonly included in research papers. They provide the reader with basic information on your variables which is quite easy to interpret. 
 
-For this we install the tidyverse packages, which includes various other packages useful for visualization (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others. 
+For this we install the tidyverse packages, which includes various other packages useful for visualisation (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others. 
 
 ```{r, warning = FALSE, message = FALSE}
 #install.packages(tidyverse)
@@ -77,9 +77,9 @@ Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
 - Identifying key features (mean, variance, normality/distribution of the data)
 
-Now that we have explored and visualized the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and it´s standard deviation. 
+Now that we have explored and visualised the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and it´s standard deviation. 
 
-`r shiny::icon("star")` Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation or variance. Without the variation a mean is meaningless. 
+`r shiny::icon("star")` Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation (sd) or variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. 
 
 
 ```{r}
