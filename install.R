@@ -1,0 +1,7 @@
+install.packages("tidyverse")
+install.packages("rmarkdown")
+install.packages("eurostat")
+install.packages("MARSS")
+install.packages("vegan")
+install.packages("remotes")
+remotes::install_github("allisonhorst/palmerpenguins")
