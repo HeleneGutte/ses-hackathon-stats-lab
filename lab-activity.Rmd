@@ -131,14 +131,118 @@ cor.test(x = adelie$bill_length_mm, y = adelie$bill_depth_mm)
 ```
 
 
+<br>
+
+## Multivariate Analysis or Ordinal Methods
+
+Approaches in this category attempt to measure how similar two or more objects are, given their collective characteristics.
+
+Explore PCA, kmeans, and clustering below using the `vegan` package and a dataset it contains called `dune`. For an in-depth tutorial on multivariate analysis and ordinal methods with the `vegan` R packages, see [this vignette](https://www.mooreecology.com/uploads/2/4/2/1/24213970/vegantutor.pdf)
+
+```{r}
+# install.packages("vegan")
+library(vegan)
+
+## using dune dataset
+data(dune) 
+data(dune.env)
+
+## PCA
+fit <- kmeans(dune[,-1], 3, iter.max = 1000)
+table(fit$cluster)
+pca <- prcomp(dune[,-1], scale = TRUE)
+biplot(pca, scale = 0)
+
+## clustering
+dis <- vegdist(dune)
+clus_single <- hclust(dis, "single")
+cluc_complete <- hclust(dis, "complete")
+cluc_average <- hclust(dis, "average")
+
+plot(cluc_complete)
+```
+
+<mark>**Exercise 3: ? **</mark>
 
 
+Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) for the following exercises, and test similarities across a number of metro-areas in Europe.
+```{r cities dataset}
+# install.packages("eurostat")
+library(eurostat)
+var_ids <- c(
+  "urb_clivcon", "urb_cenv", "urb_ctran", "urb_cecfi",
+  "urb_ctour", "urb_ceduc", "urb_cpopstr", "urb_cfermor"
+)
+city_data <- bind_rows(lapply(var_ids, function(i){
+  get_eurostat(i, time_format = "num", type = "label")
+}))
 
-- Comparison between different categories
-- Relations between features
-- Which places or groups have similar characteristics (multivariate analysis)
-- How do features change across years (time series analysis)
+## transform the data into what we need 
+## for hierarchical clustering and PCA approaches
+city_data_wide <- city_data %>% 
+  mutate(nm = str_extract(str_replace_all(str_to_lower(indic_ur), "[^[:alnum:]]", "_"), "[a-z_0-9]+")) %>% 
+  select(nm, values, time, cities) %>% 
+  pivot_wider(id_cols = c("time", "cities"), names_from = nm, values_from = values) %>% 
+  ## filter to one year and exclude country level data
+  filter(time == 2014, !cities %in% c(eu_countries$name, "Schweiz/Suisse"))
+```
 
 
+`r shiny::icon("star")` Tip ##: Variables should be on quasi-identical scale, otherwise variables with the largest range will dominate the outcome; normalize the data (usually between zero and one) to avoid this.
+
+```{r}
+## remove variables and cities where have NAs mostly
+keep_cols <- names(colSums(is.na(city_data_wide))[which(colSums(is.na(city_data_wide)) < 370)])
+
+## a function to rescale data between zero and one
+## try both ways: with and without rescaling, and see what happens
+rescale_fun <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+df0 <- city_data_wide %>% 
+  select(all_of(keep_cols)) %>% 
+  select(-time) %>% 
+  .[complete.cases(.),] %>% 
+   mutate(across(where(is.numeric), rescale_fun))
+```
+
+
+```{r hierarchical clustering}
+df <- tibble::column_to_rownames(df0, "cities")
+distance_mat <- dist(df, method = "euclidean")
+
+## fitting Hierarchical clustering Model
+set.seed(240)
+modHclus <- hclust(distance_mat, method = "average")
+
+## plotting dendrogram
+fviz_dend(modHclus, cex = 0.3)
+```
+
+```{r pca}
+df <- df0 %>% 
+  pivot_longer(cols = !matches("cities")) %>% 
+  pivot_wider(names_from = cities, values_from = value) %>% 
+  select(-name)
+
+fit <- kmeans(df[,-1], 3, iter.max = 1000)
+pca <- prcomp(df[,-1], scale = TRUE)
+biplot(pca, scale = 0, cex = 0.3)
+```
+
+
+### Change over Time
+
+These sorts of analyses can be especially critical for risk assessment, and often necessary to identify causality (though causality cannot be detected from all time series!)
+
+```{r }
+# install.packages("MARSS")
+library(MARSS)
+## for more info see the github page for the package
+## https://nwfsc-timeseries.github.io/MARSS/
+
+
+```
 
 
