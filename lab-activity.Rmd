@@ -85,14 +85,18 @@ a_vector <- c(1, 3, 5, 7, 4, 3, NA, 2, 8)
 mean(a_vector)
 ```
 
+<br>
 
 ## Framing a research question {#frame-rq}
 
-We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context. 
-The basic research question driving the exploration is: What are differences / similarities between the states (penguin species)? Are there common patterns among the species? Can we identify relationships between the variables?
+We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context (even though this is a solely ecological data set, the concepts can be transferred to the SES context). 
+The basic research questions driving the exploration are: <br>
+(i) What are differences / similarities between the states (penguin species)? <br>
+(ii) Are there common patterns among the species? <br>
+(iii) Can we identify relationships between the variables? <br> 
 Before starting the analysis it is always useful to do some basic data exploration and visualisation exercises to get a "feeling" for your data -> How does it look like? These descriptive statistics are not only valuable for yourself and to build your hypothesis but they are also commonly included in research papers. They provide the reader with basic information on your variables which is quite easy to interpret. 
 
-For this we install the tidyverse packages, which includes various other packages useful for visualisation (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others. 
+For this we load the tidyverse package, which includes various other packages useful for visualisation (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others. 
 
 ```{r, warning = FALSE, message = FALSE}
 library(tidyverse)
@@ -167,27 +171,37 @@ Another part of descriptive statistics is to identify correlations between diffe
 `r shiny::icon("star")` **Tip 3: Correlation ≠ Causation! This is one of the most important things to keep in mind when doing data analysis! Therefore, you should always be careful in your wording when reporting relationships. Avoid sentences like "Higher values of X mean higher values of Y". Rather use "Higher values of X go along with higher values of Y". **
 </p>
 
-We first visually explore the relationship between two variables: 
+First we visually explore the relationship between two variables: 
 ```{r, warning = FALSE}
 ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
   geom_point() +
   labs(x = "Bill length (mm)", y = "Bill depth (mm)")
 ```
 
-The points scatter over the entire plot, but it seems like there is a slightly positive correlation between bill length and bill depth. We can validate this by using a correlation test such as Pearson´s correlation coefficient test. This test is a parametric test, so we have to check that both our variables are normally distributed (their histograms should have a bell-shape). We already did this for the bill length, so let´s check the bill depth 
+The points scatter over the entire plot, but it seems like there is a slightly positive correlation between bill length and bill depth. We can validate this by using a correlation test such as Pearson´s correlation coefficient test. This test is a parametric test, so we have to check that both our variables are normally distributed (their histograms should have a bell-shape).
 
 <p style="color:#364552; background-color:#a0c0c4"> 
 `r shiny::icon("star")`**Tip 4: Always check the assumptions of your test, before applying any statistics! Common assumptions are normal distribution of the data or variance homogeneity.** 
 </p>
 
 ```{r, message = FALSE}
-ggplot(data = penguins)+
+hist_bill <- ggplot(data = penguins) +
+  geom_histogram(aes(x = bill_length_mm, fill = species), 
+    position = position_identity(), alpha = 0.6) +
+  scale_fill_manual(values = as.character(pal[1:3])) +
+  xlab("Bill length (mm)") + ylab("Frequency") +
+  labs(fill = "Species") +
+  theme(legend.position = "bottom")
+
+hist_bill2 <- ggplot(data = penguins)+
   geom_histogram(aes(x = bill_depth_mm, fill = species), 
                  position = position_identity(), alpha = 0.6) +
   xlab("Bill depth (mm)") + ylab("Frequency") +
   labs(fill = "Species") +
-  scale_fill_manual(values = as.character(pal[1:3]))
+  scale_fill_manual(values = as.character(pal[1:3]))+
+  theme(legend.position = "bottom")
 
+ggpubr::ggarrange(hist_bill, hist_bill2, ncol = 2)
 ```
 
 The individual species have a bell-shaped distribution regarding the bill length, except for the Chinstrap penguins. It looks like the data of the Chinstrap penguins has to peaks. 
@@ -208,7 +222,7 @@ This output tells us that R is confident that there is a correlation (p-value < 
 `r shiny::icon("book-open")`**Exercise 3: Calculate the correlation between bill length and bill depth for the other two species and across all species. Remember to check for normality of both variables, if one of them is not normally distributed you have to choose another test (just google for non-parametric correlation test). **
 </p>
 
-
+<br>
 
 ## Group comparison {#group-comp}
 
@@ -250,7 +264,7 @@ The values do not deviate a lot from the reference line and the sample sizes are
 car::leveneTest(penguins$bill_length_mm, penguins$species)
 ```
 
-The output is not significant, meaning that the variance is homogeneous across the species.
+The output is not significant, meaning that the variance is homogeneous across the species. <br>
 As all assumptions are fulfilled we can now calculate the actual ANOVA: 
 
 ```{r}
@@ -274,12 +288,11 @@ TukeyHSD(anova_penguins)
 ## Regression analysis {#reg}
  
 In this chapter we explore the relationship between two variables using regression analysis. 
-Our research question is: Have heavier penguins, larger bills?
+Our research question is: Have heavier penguins larger bills?
 
-The hypothesis ($H_{1}$) and null hypothesis ($H_{0}$) are:
-$H_{1}$ = Heavier penguins have larger bills. 
-$H_{0}$ = Heavier penguins do *not* have larger bills. 
-
+The hypothesis ($H_{1}$) and null hypothesis ($H_{0}$) are: <br>
+$H_{1}$ = Heavier penguins have larger bills. <br>
+$H_{0}$ = Heavier penguins do *not* have larger bills. <br>
 Each species will be investigated individually. 
 
 We approach this question by visualising the data: 
