@@ -31,8 +31,10 @@ pal <- c(
 [3. Framing a research  question](#frame-rq) <br>
 [4. Preliminary data exploration](#prelim-explor) <br>
 [5. Group comparison](#group-comp) <br>
-[6. Intro to some multivariate methods](#multivariate) <br>
-[7. A few notes on time series](#time-series) <br>
+[6. Regression models](#reg) <br>
+[7. Intro to some multivariate methods](#multivariate) <br>
+[8. A few notes on time series](#time-series) <br>
+[9. References](#ref) <br>
 
 <br>
 
@@ -96,12 +98,12 @@ For this we install the tidyverse packages, which includes various other package
 library(tidyverse)
 
 #Boxplot bill length
-box <- ggplot(data = penguins, aes(x = penguins$species, y = penguins$bill_length_mm))+
+box_bill <- ggplot(data = penguins, aes(x = penguins$species, y = penguins$bill_length_mm))+
   geom_boxplot()+
   xlab("Species")+ ylab("Bill length (mm)")
 
 #Histogram bill length  
-hist <- ggplot(data = penguins) +
+hist_bill <- ggplot(data = penguins) +
   geom_histogram(aes(x = bill_length_mm, fill = species), 
     position = position_identity(), alpha = 0.6) +
   scale_fill_manual(values = as.character(pal[1:3])) +
@@ -109,7 +111,7 @@ hist <- ggplot(data = penguins) +
   labs(fill = "Species") +
   theme(legend.position = "bottom")
 
-ggpubr::ggarrange(box, hist, ncol = 2)
+ggpubr::ggarrange(box_bill, hist_bill, ncol = 2)
 
 ```
 
@@ -188,7 +190,8 @@ ggplot(data = penguins)+
 
 ```
 
-The individual species have a bell-shaped distribution regarding the bill length. For the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution. 
+The individual species have a bell-shaped distribution regarding the bill length, except for the Chinstrap penguins. It looks like the data of the Chinstrap penguins has to peaks. 
+Regarding the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution.
 For the normally distributed species we can apply Person´s r to test for a correlation between the two variables: 
 ```{r}
 #filtering for penguins of the Adelie species
@@ -268,6 +271,91 @@ TukeyHSD(anova_penguins)
 
 <br>
 
+## Regression analysis {#reg}
+ 
+In this chapter we explore the relationship between two variables using regression analysis. 
+Our research question is: Have heavier penguins, larger bills?
+
+The hypothesis ($H_{1}$) and null hypothesis ($H_{0}$) are:
+$H_{1}$ = Heavier penguins have larger bills. 
+$H_{0}$ = Heavier penguins do *not* have larger bills. 
+
+Each species will be investigated individually. 
+
+We approach this question by visualising the data: 
+
+```{r}
+ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
+  geom_point(aes(colour = species))+
+  scale_colour_manual(values = as.character(pal[1:3])) +
+  labs(x = "Body mass (g)", y = "Bill length (mm)", colour = "Species")
+```
+
+The plot suggests that we can deny the Nullhypothesis, but we will verify this applying a regression model to the data. 
+There are several kinds of regression models. The most simple one is a linear model (lm), it is suitable for continuous normal distributed data. For non linear data one can transform the data or use a generalised linear model (glm), which allows fitting to non-linear distributions. 
+Again before applying any statistics we have to check the underlying assumptions. For a linear model normally distributed data are required. 
+
+```{r, message = FALSE}
+hist_weight <- ggplot(data = penguins) +
+  geom_histogram(aes(x = body_mass_g, fill = species), 
+    position = position_identity(), alpha = 0.6) +
+  scale_fill_manual(values = as.character(pal[1:3])) +
+  xlab("Body mass (g)") + ylab("Frequency") +
+  labs(fill = "Species") +
+  theme(legend.position = "bottom")
+
+ggpubr::ggarrange(hist_bill, hist_weight, ncol = 2)
+```
+
+```{r}
+#Q-Q plots for the bill length of each species
+ggpubr::ggqqplot(penguins, "bill_length_mm", facet.by = "species", main = "Bill length (mm)")
+#Q-Q plots for the body weight of each species
+ggpubr::ggqqplot(penguins, "body_mass_g", facet.by = "species", main = "Body mass (g)")
+```
+
+We already confirmed normality for the bill length variable, it is included here to show the entire process required for a regression analysis. 
+Both histogram and Q-Q plot show that the body mass is also normally distributed, thus we can apply a linear model to investigate our hypothesis. 
+
+```{r}
+lm_adelie <- lm(bill_length_mm ~ body_mass_g, data = adelie)
+par(mfrow = c(2,2))
+plot(lm_adelie)
+par(mfrow = c(1,1))
+```
+
+Before interpreting the results of your model you should check the model diagnostics. 
+The first plot shows the residuals against the fitted values, the points should be scattered randomly moving along the dotted line. If you can detect any patterns, e.g. less variance on the left, it can indicate that you missed another explanatory variable. 
+The second plot shows a normal Q-Q plot, we already know this plot and how it ideally should look like. 
+The third plot shows the standardized residuals, the same logic is applied as for the first plot. If you detect any patterns, think about what could be missing in your analysis. 
+The last plot helps you to identify outliers. Outliers would appear outside the Cooks distance (dashed red line), but here none have been identified by the algorithm. Otherwise we would have a few options:
+i) think about possible explanations for the outliers. Did something unregualr happened during the data sampling or processing of the samples in the lab?
+ii) Transform the data, e.g. with a log-transformation
+iii) If really necessary exclude the outlier (but only if none of the other solutions helped or if you have strong proof that the value is wrong)
+
+The model diagnostics in this analysis look fine, so we can now interpret the results. 
+
+```{r}
+summary(lm_adelie)
+```
+Under Coefficients you find the estimates for the intercept and the slope of the model as well as their respective standard error. Additionally you find information about a t-Test performed to test if the estimate is significantly different from 0. 
+As you see the estimate for the influence of body mass is significant, thus we can conclude that for this sample body mass has a significant positive influence on the bill length. 
+
+```{r, message = FALSE}
+ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
+  geom_point(aes(colour = species))+
+  scale_colour_manual(values = as.character(pal[1:3])) +
+  labs(x = "Body mass (g)", y = "Bill length (mm)", colour = "Species")+
+  geom_smooth(method = "lm")
+```
+
+
+
+<p style="color:#333333; background-color:#d3a95a"> 
+`r shiny::icon("book-open")` **Exercise 5: Make a regression analysis for the relationship between bill length and body weight regardless of the species (use the entire data set at once, remember to check for normality). Think about another research question that you can investigate and apply a regression analysis, be clear about your hypothesis and the corresponding Null-hypothesis. **
+</p>
+
+
 ## Multivariate Analysis or Ordinal Methods {#multivariate}
 
 Approaches in this category attempt to measure how similar two or more objects are, given their collective characteristics.
@@ -279,7 +367,7 @@ Explore PCA, kmeans, and clustering below using the `vegan` package and a data s
 - How do features change across years (time series analysis)
 
 <p style="color:#333333; background-color:#d3a95a"> 
-`r shiny::icon("book-open")` **Exercise 5: Before beginning, can you apply what you learned above to familiarize yourself with the data types and data set structure? What are the variables in this data set (hint: check the R documentation)?**
+`r shiny::icon("book-open")` **Exercise 6: Before beginning, can you apply what you learned above to familiarize yourself with the data types and data set structure? What are the variables in this data set (hint: check the R documentation)?**
 </p>
 
 ```{r}
@@ -305,7 +393,7 @@ plot(cluc_complete)
 ```
 
 <p style="color:#333333; background-color:#d3a95a"> 
-`r shiny::icon("book-open")` **Exercise 5: ? **
+`r shiny::icon("book-open")` **Exercise 7: ? **
 </p>
 
 Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) for the following exercises, and test similarities across a number of metro-areas in Europe.
@@ -380,7 +468,7 @@ biplot(pca, scale = 0, cex = 0.3)
 ```
 
 
-### Change over Time
+## Change over Time {#time-series}
 
 These sorts of analyses can be especially critical for risk assessment, and often necessary to identify causality (though causality cannot be detected from all time series!)
 
