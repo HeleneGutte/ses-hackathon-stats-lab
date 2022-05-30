@@ -61,9 +61,10 @@ ggplot(data = penguins, aes(x = penguins$species, y = penguins$bill_length_mm))+
   xlab("Species")+ ylab("Bill length (mm)")
 
 ggplot(data = penguins)+
-  geom_histogram(aes(x = bill_length_mm, colour = species, fill = species))+
+  geom_histogram(aes(x = bill_length_mm,  fill = species))+
   xlab("Bill length (mm)") + ylab("Frequency") +
-  labs(fill = "Species", colour = "Species")
+  scale_fill_manual(values = c("black", "orange", "skyblue"))+
+  labs(fill = "Species")
   
 ```
 
@@ -75,7 +76,7 @@ Following the steps outlined in Chapter 18 (`SES Problems and Questions`):
 
 - Identifying key features (mean, variance, normality/distribution of the data)
 
-Now that we have explored and visualized the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and it´s standard deviation. 
+Now that we have explored and visualized the data set a bit, we want to identify key features of the different species, to summarise the data set. R provides several functions for this task. Here we calculate the mean bill length per species and its standard deviation. 
 
 `r shiny::icon("star")` Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation or variance. Without the variation a mean is meaningless. 
 
@@ -86,7 +87,7 @@ sd(penguins$bill_length_mm, na.rm = TRUE)
 ```
 
 Now we know the mean bill length and its sd across all three penguin species, will those values change if we calculate the same measures per species? 
-We are using the tidyverse syntax in the following, you could do the same calculations using base R, its just a matter of convenience...
+We are using the tidyverse syntax in the following, you could do the same calculations using base R, it´s just a matter of convenience...
 
 ```{r}
 penguins%>%
@@ -112,11 +113,14 @@ ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm))+
 
 The points scatter over the entire plot, but it seems like there is a slightly positive correlation between bill length and bill depth. We can validate this by using a correlation test as Pearson´s correlation coefficient test, this test is a parametric test, so we have to check that both our variables are normally distributed (their histograms should have a bell-shape). We already did this for the bill length, so let´s check the bill depth 
 
+`r shiny::icon("star")` Tip 4: Always check the assumptions of your test, before applying any statistics! Common assumptions are normal distribution of the data or variance homogeneity. 
+
 ```{r, message = FALSE}
 ggplot(data = penguins)+
-  geom_histogram(aes(x = bill_depth_mm, colour = species, fill = species))+
+  geom_histogram(aes(x = bill_depth_mm, fill = species))+
   xlab("Bill depth (mm)") + ylab("Frequency")+
-  labs(colour = "Species", fill = "Species")
+  scale_fill_manual(values = c("black", "orange", "skyblue"))+
+  labs(fill = "Species")
 ```
 
 The individual species have a bell-shaped distribution regarding the bill length. For the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution. 
@@ -130,9 +134,57 @@ cor.test(x = adelie$bill_length_mm, y = adelie$bill_depth_mm)
 So this output tells us that R is confident that there is a correlation (p-value), but it is a rather weak correlation (the correlation coefficient is closer to zero than to 1 or -1). 
 
 
-<mark>**Exercise 3: Calculate the corrleation between bill length and bill depth for the other two species. Remember to check for normality of both variables, if one of them is not normally distributed you have to choose another test (just google for non-parametric correlation test). **</mark>
+<mark>**Exercise 3: Calculate the correlation between bill length and bill depth for the other two species. Remember to check for normality of both variables, if one of them is not normally distributed you have to choose another test (just google for non-parametric correlation test). **</mark>
 
 - Comparison between different categories
+
+If you want to investigate the difference between two (or more) groups you usually compare the mean of the groups. One famous test for this purpose is the t-Test. It has the Null-hypothesis that the true difference of the between two groups is zero. So if the p-value of the output is smaller than 0.05, we can reject the Null-Hypothesis and conclude that there is a significant difference in the mean of both groups. 
+There are several other test for group comparisons aimed at different types of data, e.g. the t-Test is suitable for normally distributed data, if you have non-parametric data you have to use another test (see page 260 in the book). 
+If you want to compare more than two groups you have to use other tests again. For normal distributed data you can use the ANOVA, for non-parametric data the Kruskal-Wallis or the Chi-squared test can be used. 
+
+`r shiny::icon("star")` Tip 5: Decision trees can help you find the correct test / analysis for your data and research question. For example this one: [`decision tree`](https://www.central7.net/wp-content/uploads/2015/09/stats_flow_chart_v2014.gif). 
+
+In this lab we want to identify if there are differences between the different penguin species regarding their bill length. This means we compare more than two groups, to use the ANOVA we first have to check if all data is normally distributed and if the variance are homogeneous. 
+
+Instead of checking the assumption of normal distribution visually we use this time the Shapiro - Wilks Test: 
+
+```{r}
+shapiro.test(penguins[penguins$species == "Adelie", ]$bill_length_mm)
+shapiro.test(penguins[penguins$species == "Chinstrap", ]$bill_length_mm)
+shapiro.test(penguins[penguins$species == "Gentoo", ]$bill_length_mm)
+
+```
+The bill length is normally distributed for the Adelie and Chinstrap penguins, but not for the Gentoos. We can confirm this by checking the Normal Q-Q plot, as the Shapiro-Wilks Test get´s quite sensitive in case the sample size is > 50. 
+
+```{r}
+#install.packages("ggpubr")
+ggpubr::ggqqplot(penguins, "bill_length_mm", facet.by = "species")
+```
+
+The values do not deviate a lot from the reference line, thus we can assume normality and continue by checking the second assumption of the ANOVA, the variance homogeneity. 
+
+```{r}
+car::leveneTest(penguins$bill_length_mm, penguins$species)
+```
+
+The output is not significant, meaning that the variance is homogenous across the species.
+As all assumptions are fulfilled we can now calculate the actual ANOVA: 
+
+```{r}
+anova_penguins <- aov(penguins$bill_length_mm ~ penguins$species)
+summary(anova_penguins)
+
+```
+
+From the output we can conclude that there is a significant difference in bill length between the three species, but we actually don´t now which of the groups differ. Therefor we perform a post-hoc Test such as Tukey´s HSD (Honest Significant Differences):
+
+```{r}
+TukeyHSD(anova_penguins)
+
+```
+
+
+
 - Relations between features
 - Which places or groups have similar characteristics (multivariate analysis)
 - How do features change across years (time series analysis)
