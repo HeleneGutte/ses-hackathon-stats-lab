@@ -4,6 +4,8 @@ output:
     css: "style.css"
     includes:
       in_header: hero-image.html
+bibliography: references.bib
+csl: nature.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -40,7 +42,7 @@ pal <- c(
 
 ## Get Data and Libraries {#data-libs}
 
-We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections.
+We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections [@R-palmerpenguins].
 
 ```{r get data}
 # install.packages("remotes")
@@ -494,4 +496,5 @@ library(MARSS)
 
 ```
 
+## References {#ref}
 
