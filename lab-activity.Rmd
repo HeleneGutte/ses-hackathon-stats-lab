@@ -42,7 +42,7 @@ pal <- c(
 
 ## Get Data and Libraries {#data-libs}
 
-We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections [@R-palmerpenguins]. We download the data set from github using the remotes package [@remotes]. 
+We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) [@R-palmerpenguins] package for the first few sections. We download the data set from github using the remotes package [@remotes]. 
 
 ```{r get data}
 # install.packages("remotes")
@@ -76,6 +76,7 @@ Before even starting to explore the data set you should be aware of the differen
 `r shiny::icon("star")` **Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical value. Other programmes, such as STATA, consider "." as infinity. <br> Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occurring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. **
 </p>
 
+<br>
 
 ```{r}
 summary(penguins)
@@ -91,12 +92,12 @@ mean(a_vector)
 
 ## Framing a research question {#frame-rq}
 
-We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context (even though this is a solely ecological data set, the concepts can be transferred to the SES context). 
+We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context as outlined in the book "The Routledge handbook of research emthods fpr social-ecological systems [@biggs2021routledge] (even though this is a solely ecological data set, the concepts can be transferred to the SES context).  
 The basic research questions driving the exploration are: <br>
 
 (i) What are differences / similarities between the states (penguin species)? <br>
-(ii) Are there common patterns among the states (species)? <br>
-(iii) Can we identify relationships between the variables? <br> 
+(ii) Are there common patterns among the states (penguin species)? <br>
+(iii) Can we identify relationships between the variables (e.g. bill length)? <br> 
 
 Before starting the analysis it is always useful to do some basic data exploration and visualisation exercises to get a "feeling" for your data and to know how it looks like. These descriptive statistics are not only valuable for yourself and to build your hypothesis but they are also commonly included in research papers. They provide the reader with basic information on your variables which is quite easy to interpret. 
 
@@ -124,7 +125,7 @@ ggpubr::ggarrange(box_bill, hist_bill, ncol = 2)
 
 ```
 
-Above you see two different visualizations of the same variable (there are several ways to arrange two or more plots together, above you see a simple way to specify that both plots should be arrange together in two columns using the ggpubr package [@ggpubr]). On the left a **boxplot** and on the right a **histogram**. Think about which one you like more and why? What are possible advantages of each visualisation?
+Above you see two different visualizations of the same variable (there are several ways to arrange two or more plots together, above you see a simple way to specify that both plots should be arranged together in two columns using the ggpubr package [@ggpubr]). The plot on the left is a **boxplot** and on the right is a **histogram**. Think about which one you like more and why? What are possible advantages of each visualisation?
 
 <p style="color:#333333; background-color:#d3a95a"> 
 `r shiny::icon("book-open")` **Exercise 1: Explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **
@@ -137,12 +138,12 @@ Above you see two different visualizations of the same variable (there are sever
 Following the steps outlined in Chapter 18 (`SES Problems and Questions`) we will:
 
 - Identify key features (mean, variance, normality/distribution of the data)
-- Investigate correlation
+- Investigate correlations among the variables
 
-Both steps are part of the descriptive statistics used to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and its standard deviation (sd). The mean is a measure for the central tendency and the standard deviation is a measure of the variability.  
+Both steps are part of the descriptive statistics used to summarise the data set. R provides several function for this task. First we calculate the mean bill length per species and its standard deviation (sd). The mean is a measure for the central tendency and the standard deviation is a measure of the variability.  
 
 <p style="color:#364552; background-color:#a0c0c4"> 
-`r shiny::icon("star")` **Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation or variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. **
+`r shiny::icon("star")` **Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation, the standard error or the variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. **
 </p>
 
 ```{r}
@@ -153,7 +154,7 @@ sd(penguins$bill_length_mm, na.rm = TRUE)
 Remember that we have to exclude the NAs from our calculations, otherwise the result would be NA. The argument `na.rm = TRUE` removes (rm) all NAs from the calculations for you.  
 
 Now we know the mean bill length and its sd across all three penguin species. Will those values change if we calculate the same measures per species? 
-We are using the tidyverse syntax in the following. You could do the same calculations using base R (see the example in the code), it is just a matter of convenience... 
+To investigate these questions in a simple, fast and easy to read style w e are using the tidyverse syntax in the following. You could do the same calculations using base R (see the example in the code), it is just a matter of convenience... 
 
 ```{r}
 penguins%>%
@@ -181,7 +182,7 @@ Another part of descriptive statistics is to identify correlations between diffe
 </p>
 
 
-First we visually explore the relationship between two variables: 
+To start the correlation analysis we visually explore the relationship between two variables: 
 ```{r, warning = FALSE}
 ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
   geom_point() +
@@ -216,7 +217,7 @@ ggpubr::ggarrange(hist_bill, hist_bill2, ncol = 2)
 ```
 
 The individual species have a bell-shaped distribution regarding the bill length, except for the Chinstrap penguins. It looks like the data of the Chinstrap penguins has to peaks. 
-Regarding the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution.
+The Chinstraps also have a non bell-shaped distribution regarding the bill depth, instead the distribution looks rather uniform. <br>
 For the normally distributed species we can apply Person´s correlation test to test for a correlation between the two variables: 
 ```{r}
 #filtering for penguins of the Adelie species
@@ -237,8 +238,8 @@ This output tells us that R is confident that there is a correlation (p-value < 
 
 ## Group comparison {#group-comp}
 
-If you want to investigate the difference between two (or more) groups you usually compare the mean of the groups. One famous test for this purpose is the t-Test. It has the Null-hypothesis that the true difference of the mean between two groups is zero (no difference between the groups). So if the p-value of the output is smaller than 0.05, we can reject the Null-Hypothesis and conclude that there is a significant difference in the mean of both groups. 
-There are several other test for group comparisons aimed at different types of data, e.g. the t-Test is suitable for normally distributed data, thus if you have non-parametric data you have to use another test (see page 260 in the book). 
+If you want to investigate the difference between two (or more) groups you usually compare the mean of the groups. One famous test for this purpose is the t-Test. It has the Null-hypothesis that the true difference of the mean between two groups is zero (no difference between the groups). So if the p-value of the output is smaller than 0.05, we can reject the Null-Hypothesis and conclude that there is a significant difference in the mean of both groups. <br>
+There are several other tests for group comparisons aimed at different types of data, e.g. the t-Test is suitable for normally distributed data, thus if you have non-parametric data you have to use another test (see page 260 in The Routledge handbook [@biggs2021routledge]). <br>
 If you want to compare more than two groups you have to use other tests again. For normal distributed data you can use the ANOVA, for non-parametric data the Kruskal-Wallis or the Chi-squared test can be applied. 
 
 <p style="color:#364552; background-color:#a0c0c4"> 
@@ -246,7 +247,7 @@ If you want to compare more than two groups you have to use other tests again. F
 </p>
 
 
-In this lab we want to investigate if there are differences between the different penguin species regarding their bill length. This means we compare more than two groups, an ANOVA might be suitable. But before we use it we have to check the assumptions of the ANOVA: Normal distribution of the data and variance homogeneity. 
+In this lab we want to investigate if there are differences between the three penguin species regarding their bill length. This means we compare more than two groups, an ANOVA might be suitable. But before we use it we have to check the assumptions of the ANOVA: Normal distribution of the data and variance homogeneity between the groups. 
 
 Instead of checking the assumption of normal distribution visually we use this time the Shapiro - Wilks Test: 
 
@@ -257,7 +258,7 @@ shapiro.test(penguins[penguins$species == "Gentoo", ]$bill_length_mm)
 ```
 
 The Null-Hypothesis of the Shapiro-Wilks Test is that the data is normally distributed. Thus if the p-value is **not** significant (p > 0.05), we can assume normal distributed data. 
-According to the Shapiro-Wilks Test the bill length is normally distributed for the Adelie and Chinstrap penguins, but not for the Gentoos. We should confirm this by checking the Normal Q-Q plot, as the Shapiro-Wilks Test get´s quite sensitive in case the sample size is > 50. 
+According to the Shapiro-Wilks Test the bill length is normally distributed for the Adelie and Chinstrap penguins, but not for the Gentoos. We should confirm this by checking the Normal Q-Q plot, as the Shapiro-Wilks Test gets quite sensitive in case the sample size is > 50. 
 
 ```{r}
 #check the sample size n for each species
@@ -290,7 +291,7 @@ TukeyHSD(anova_penguins)
 ```
 
 <p style="color:#333333; background-color:#d3a95a"> 
-`r shiny::icon("book-open")`**Exercise 4: Make a comparison across species for one of the other variables, you can choose which one. Remember to check the assumption before doing an ANOVA, if they cannot be fulfilled you have to use another test. A decision tree can help you to find a suitable test.**
+`r shiny::icon("book-open")`**Exercise 4: Make a comparison across species for one of the other variables, you can choose which one. Remember to check the assumptions before doing an ANOVA, if they cannot be fulfilled you have to use another test. A decision tree can help you to find a suitable test.**
 </p>
 
 
@@ -315,8 +316,8 @@ ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
   labs(x = "Body mass (g)", y = "Bill length (mm)", colour = "Species")
 ```
 
-The plot suggests that we can deny the Nullhypothesis, but we will verify this applying a regression model to the data. 
-There are several kinds of regression models. The most simple one is a linear model (lm), it is suitable for continuous normal distributed data. For non linear data one can transform the data or use a generalised linear model (glm), which allows fitting to non-linear distributions. 
+The plot suggests that we can deny the Nullhypothesis, but we will verify this applying a regression model to the data. <br>
+There are several kinds of regression models. The most simple one is a linear model (lm), it is suitable for continuous normal distributed data. For non linear data one can transform the data to get a linear distribution or use a generalised linear model (glm), which allows fitting to non-linear distributions. <br>
 Again before applying any statistics we have to check the underlying assumptions. For a linear model normally distributed data are required. 
 
 ```{r, message = FALSE}
@@ -343,27 +344,31 @@ Both histogram and Q-Q plot show that the body mass is also normally distributed
 
 ```{r}
 lm_adelie <- lm(bill_length_mm ~ body_mass_g, data = adelie)
-par(mfrow = c(2,2))
+par(mfrow = c(2,2)) #changes settings of the plot panel to display 2 columns and 2 rows => 4 plots 
+#plot model diagnostics
 plot(lm_adelie)
-par(mfrow = c(1,1))
+par(mfrow = c(1,1)) #changes settings of the plot panel to display 1 column and 1 row => 1 plot
 ```
 
-Before interpreting the results of your model you should check the model diagnostics. 
-The first plot shows the residuals against the fitted values, the points should be scattered randomly moving along the dotted line. If you can detect any patterns, e.g. less variance on the left, it can indicate that you missed another explanatory variable. 
+Before interpreting the results of your model you should check the model diagnostics: <br> 
+The first plot shows the residuals against the fitted values, the points should be scattered randomly moving along the dotted line. If you can detect any patterns, e.g. less variance on the left, it can indicate that you missed another explanatory variable. <br>
 The second plot shows a normal Q-Q plot, we already know this plot and how it ideally should look like. 
-The third plot shows the standardized residuals, the same logic is applied as for the first plot. If you detect any patterns, think about what could be missing in your analysis. 
-The last plot helps you to identify outliers. Outliers would appear outside the Cooks distance (dashed red line), but here none have been identified by the algorithm. Otherwise we would have a few options:
-i) think about possible explanations for the outliers. Did something unregualr happened during the data sampling or processing of the samples in the lab?
-ii) Transform the data, e.g. with a log-transformation
-iii) If really necessary exclude the outlier (but only if none of the other solutions helped or if you have strong proof that the value is wrong)
+The third plot shows the standardized residuals, the same logic is applied as for the first plot. If you detect any patterns, think about what could be missing in your analysis. <br>
+The last plot helps you to identify outliers. Outliers would appear outside the Cooks distance (dashed red line), but here none have been identified by the algorithm. Otherwise we would have a few options: <br>
+
+(i) think about possible explanations for the outliers. Did something unregular happened during the data sampling or processing of the samples in the lab? <br>
+(ii) Transform the data, e.g. with a log-transformation <br>
+(iii) If really necessary exclude the outlier (but only if none of the other solutions helped or if you have strong proof that the value is wrong) <br>
 
 The model diagnostics in this analysis look fine, so we can now interpret the results. 
 
 ```{r}
 summary(lm_adelie)
 ```
-Under Coefficients you find the estimates for the intercept and the slope of the model as well as their respective standard error. Additionally you find information about a t-Test performed to test if the estimate is significantly different from 0. 
-As you see the estimate for the influence of body mass is significant, thus we can conclude that for this sample body mass has a significant positive influence on the bill length. 
+Under *Coefficients* you find the estimates for the intercept and the slope of the model as well as their respective standard error. Additionally you find information about a t-Test performed for each estimate. The results of the t-Test for the intercept tells you whether the estimate differs significantly from 0. The t-Test for the slope (body_mass_g) tells you if it makes a significant difference to include this specific variable into the model (basically it answer the question if this variable explains the variance within the data).
+As you see the estimate for the influence of body mass is significant, thus we can conclude that for this sample body mass has a significant influence on the bill length. Since the estimate for the slope is positive, we can conclude that the impact of body mass on bill length is a positive one. <br>
+The multiple $R^{2}$ value indicates how much of the variance in the data can be explained by the predictor variable (body mass) on a scale from 0 - 1 (corresponding to 0% to 100 %). The adjusted $R^{2}$ accounts for the number of predictor variables, as the $R^{2}$ gets better, the more predictors you include in the model. But since we only use one predictor, we can rely on the multiple $R^{2}$. 
+
 
 ```{r, message = FALSE}
 ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
@@ -416,9 +421,6 @@ cluc_average <- hclust(dis, "average")
 plot(cluc_complete)
 ```
 
-<p style="color:#333333; background-color:#d3a95a"> 
-`r shiny::icon("book-open")` **Exercise 7: ? **
-</p>
 
 Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) [@eurostat] for the following exercises, and test similarities across a number of metro-areas in Europe.
 ```{r cities dataset, eval = FALSE, messages = FALSE}
