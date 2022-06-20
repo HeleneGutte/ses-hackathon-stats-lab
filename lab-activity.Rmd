@@ -42,7 +42,7 @@ pal <- c(
 
 ## Get Data and Libraries {#data-libs}
 
-We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections [@R-palmerpenguins].
+We will use data from the [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins) package for the first few sections [@R-palmerpenguins]. We download the data set from github using the remotes package [@remotes]. 
 
 ```{r get data}
 # install.packages("remotes")
@@ -73,7 +73,7 @@ head(penguins)
 Before even starting to explore the data set you should be aware of the different data types you are working with. In the penguins data set we can find two different types of data: discrete or categorical data and continuous data. Discrete data are classified in penguins as factors (e.g. species, island and sex). The other variables are continuous and belong either to the class double or integer. 
 
 <p style="color:#364552; background-color:#a0c0c4"> 
-`r shiny::icon("star")` **Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical values. Other programmes, such as STATA, considers "." as infinity. Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occurring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. **
+`r shiny::icon("star")` **Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical value. Other programmes, such as STATA, consider "." as infinity. <br> Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occurring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. **
 </p>
 
 
@@ -93,12 +93,15 @@ mean(a_vector)
 
 We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context (even though this is a solely ecological data set, the concepts can be transferred to the SES context). 
 The basic research questions driving the exploration are: <br>
-(i) What are differences / similarities between the states (penguin species)? <br>
-(ii) Are there common patterns among the species? <br>
-(iii) Can we identify relationships between the variables? <br> 
-Before starting the analysis it is always useful to do some basic data exploration and visualisation exercises to get a "feeling" for your data -> How does it look like? These descriptive statistics are not only valuable for yourself and to build your hypothesis but they are also commonly included in research papers. They provide the reader with basic information on your variables which is quite easy to interpret. 
 
-For this we load the tidyverse package, which includes various other packages useful for visualisation (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others. 
+(i) What are differences / similarities between the states (penguin species)? <br>
+(ii) Are there common patterns among the states (species)? <br>
+(iii) Can we identify relationships between the variables? <br> 
+
+Before starting the analysis it is always useful to do some basic data exploration and visualisation exercises to get a "feeling" for your data and to know how it looks like. These descriptive statistics are not only valuable for yourself and to build your hypothesis but they are also commonly included in research papers. They provide the reader with basic information on your variables which is quite easy to interpret. 
+
+For this we load the tidyverse package [@tidyverse], which includes various other packages useful for visualisation (ggplot2), data wrangling (dplyr, tidyr), string manipulation (stringr) and others.
+As a first step we plot the bill length variable:
 
 ```{r, warning = FALSE, message = FALSE}
 library(tidyverse)
@@ -121,10 +124,10 @@ ggpubr::ggarrange(box_bill, hist_bill, ncol = 2)
 
 ```
 
-Above you see two different visualizations of the same variable. On the left a **boxplot** and on the right a **histogram**. Think about which one you like more and why? What are possible advantages of each visualisation?
+Above you see two different visualizations of the same variable (there are several ways to arrange two or more plots together, above you see a simple way to specify that both plots should be arrange together in two columns using the ggpubr package [@ggpubr]). On the left a **boxplot** and on the right a **histogram**. Think about which one you like more and why? What are possible advantages of each visualisation?
 
 <p style="color:#333333; background-color:#d3a95a"> 
-`r shiny::icon("book-open")` **Exercise 1: Now you can explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **
+`r shiny::icon("book-open")` **Exercise 1: Explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **
 </p>
 
 <br>
@@ -136,7 +139,7 @@ Following the steps outlined in Chapter 18 (`SES Problems and Questions`) we wil
 - Identify key features (mean, variance, normality/distribution of the data)
 - Investigate correlation
 
-Both steps are part of the descriptive statistic used to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and its standard deviation (sd). The mean is a measure for the central tendency and the standard deviation is a measure of the variability.  
+Both steps are part of the descriptive statistics used to summarise the data set. R provides several function for this task. Here we calculate the mean bill length per species and its standard deviation (sd). The mean is a measure for the central tendency and the standard deviation is a measure of the variability.  
 
 <p style="color:#364552; background-color:#a0c0c4"> 
 `r shiny::icon("star")` **Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation or variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. **
@@ -147,16 +150,20 @@ mean(penguins$bill_length_mm, na.rm = TRUE)
 sd(penguins$bill_length_mm, na.rm = TRUE)
 ```
 
-Remember that we have to exclude the NAs from our calculations, otherwise the result would be NA. The argument `na.rm = TRUE` removes (rm) all NAs for you.  
+Remember that we have to exclude the NAs from our calculations, otherwise the result would be NA. The argument `na.rm = TRUE` removes (rm) all NAs from the calculations for you.  
 
 Now we know the mean bill length and its sd across all three penguin species. Will those values change if we calculate the same measures per species? 
-We are using the tidyverse syntax in the following, you could do the same calculations using base R, it is just a matter of convenience...
+We are using the tidyverse syntax in the following. You could do the same calculations using base R (see the example in the code), it is just a matter of convenience... 
 
 ```{r}
 penguins%>%
   group_by(species)%>%
   summarise("mean_bill_length" = mean(bill_length_mm, na.rm = TRUE),
             "sd_bill_length" = sd(bill_length_mm, na.rm = TRUE))
+
+#Base R for Adelie penguins
+mean(penguins[penguins$species == "Adelie", ]$bill_length_mm, na.rm = TRUE)
+sd(penguins[penguins$species == "Adelie", ]$bill_length_mm, na.rm = TRUE)
 ```
 
 For non-parametric and discrete data it is more common to use parameters such as the median or quartiles. It is also common to use the median in case of skewed data. Skewed data implies that your data is not normally distributed (no bell shape) but that it has a "tail" which is longer on the left (more values smaller than the mean) or right (more values higher than the mean). 
@@ -173,6 +180,7 @@ Another part of descriptive statistics is to identify correlations between diffe
 `r shiny::icon("star")` **Tip 3: Correlation ≠ Causation! This is one of the most important things to keep in mind when doing data analysis! Therefore, you should always be careful in your wording when reporting relationships. Avoid sentences like "Higher values of X mean higher values of Y". Rather use "Higher values of X go along with higher values of Y". **
 </p>
 
+
 First we visually explore the relationship between two variables: 
 ```{r, warning = FALSE}
 ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
@@ -181,6 +189,7 @@ ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
 ```
 
 The points scatter over the entire plot, but it seems like there is a slightly positive correlation between bill length and bill depth. We can validate this by using a correlation test such as Pearson´s correlation coefficient test. This test is a parametric test, so we have to check that both our variables are normally distributed (their histograms should have a bell-shape).
+
 
 <p style="color:#364552; background-color:#a0c0c4"> 
 `r shiny::icon("star")`**Tip 4: Always check the assumptions of your test, before applying any statistics! Common assumptions are normal distribution of the data or variance homogeneity.** 
@@ -208,7 +217,7 @@ ggpubr::ggarrange(hist_bill, hist_bill2, ncol = 2)
 
 The individual species have a bell-shaped distribution regarding the bill length, except for the Chinstrap penguins. It looks like the data of the Chinstrap penguins has to peaks. 
 Regarding the bill depth only two species have a bell-shaped distribution, the Chinstraps have a rather uniform distribution.
-For the normally distributed species we can apply Person´s r to test for a correlation between the two variables: 
+For the normally distributed species we can apply Person´s correlation test to test for a correlation between the two variables: 
 ```{r}
 #filtering for penguins of the Adelie species
 adelie <- penguins%>%
@@ -228,7 +237,7 @@ This output tells us that R is confident that there is a correlation (p-value < 
 
 ## Group comparison {#group-comp}
 
-If you want to investigate the difference between two (or more) groups you usually compare the mean of the groups. One famous test for this purpose is the t-Test. It has the Null-hypothesis that the true difference of the mean between two groups is zero. So if the p-value of the output is smaller than 0.05, we can reject the Null-Hypothesis and conclude that there is a significant difference in the mean of both groups. 
+If you want to investigate the difference between two (or more) groups you usually compare the mean of the groups. One famous test for this purpose is the t-Test. It has the Null-hypothesis that the true difference of the mean between two groups is zero (no difference between the groups). So if the p-value of the output is smaller than 0.05, we can reject the Null-Hypothesis and conclude that there is a significant difference in the mean of both groups. 
 There are several other test for group comparisons aimed at different types of data, e.g. the t-Test is suitable for normally distributed data, thus if you have non-parametric data you have to use another test (see page 260 in the book). 
 If you want to compare more than two groups you have to use other tests again. For normal distributed data you can use the ANOVA, for non-parametric data the Kruskal-Wallis or the Chi-squared test can be applied. 
 
@@ -260,7 +269,7 @@ penguins%>%
 ggpubr::ggqqplot(penguins, "bill_length_mm", facet.by = "species")
 ```
 
-The values do not deviate a lot from the reference line and the sample sizes are > 50 for every species, thus we can assume normality and continue by checking the second assumption of the ANOVA, the variance homogeneity:
+The values do not deviate a lot from the reference line and the sample sizes are > 50 for every species, thus we can assume normality and continue by checking the second assumption of the ANOVA, the variance homogeneity. For this we use the Levene Test implemented in the package car [@car]: 
 
 ```{r}
 car::leveneTest(penguins$bill_length_mm, penguins$species)
@@ -375,7 +384,7 @@ ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
 
 Approaches in this category attempt to measure how similar two or more objects are, given their collective characteristics.
 
-Explore PCA, kmeans, and clustering below using the `vegan` package and a data set it contains called `dune`. For an in-depth tutorial on multivariate analysis and ordinal methods with the `vegan` R packages, see [this vignette](https://www.mooreecology.com/uploads/2/4/2/1/24213970/vegantutor.pdf)
+Explore PCA, kmeans, and clustering below using the `vegan` package [@vegan] and a data set it contains called `dune`. For an in-depth tutorial on multivariate analysis and ordinal methods with the `vegan` R packages, see [this vignette](https://www.mooreecology.com/uploads/2/4/2/1/24213970/vegantutor.pdf)
 
 - Relations between features
 - Which places or groups have similar characteristics (multivariate analysis)
@@ -411,7 +420,7 @@ plot(cluc_complete)
 `r shiny::icon("book-open")` **Exercise 7: ? **
 </p>
 
-Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) for the following exercises, and test similarities across a number of metro-areas in Europe.
+Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) [@eurostat] for the following exercises, and test similarities across a number of metro-areas in Europe.
 ```{r cities dataset, eval = FALSE, messages = FALSE}
 library(eurostat)
 var_ids <- c(
@@ -470,6 +479,8 @@ modHclus <- hclust(distance_mat, method = "average")
 library(factoextra)
 fviz_dend(modHclus, cex = 0.3)
 ```
+
+To plot dendrograms we use the package factoextra [@factoextra].
 
 ```{r pca, eval = FALSE}
 df <- df0 %>% 
