@@ -134,7 +134,7 @@ Above you see two different visualizations of the same variable (there are sever
 
 ## Preliminary data exploration {#prelim-explor}
 
-Following the steps outlined in Chapter 18 (`SES Problems and Questions`) we will:
+Following the steps outlined in Chapter 18  (section `SES Problems and Questions`) we will:
 
 - Identify key features (mean, variance, normality/distribution of the data)
 - Investigate correlations among the variables
@@ -242,7 +242,7 @@ There are several other tests for group comparisons aimed at different types of 
 If you want to compare more than two groups you have to use other tests again. For normal distributed data you can use the ANOVA, for non-parametric data the Kruskal-Wallis or the Chi-squared test can be applied. 
 
 <p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
-`r shiny::icon("star")` **Tip 5: Decision trees can help you find the correct test / analysis for your data and research question. For example this one: [`decision tree`](https://www.central7.net/wp-content/uploads/2015/09/stats_flow_chart_v2014.gif).**
+`r shiny::icon("star")` **Tip 5: Decision trees can help you find the correct test / analysis for your data and research question. For example this one: [`decision tree`](https://www.central7.net/wp-content/uploads/2015/09/stats_flow_chart_v2014.gif) [@decisiontree].**
 </p>
 
 
@@ -524,7 +524,7 @@ sum(apply(dune, 2, var))
 sum(summary(pca_vegan)$cont$importance["Eigenvalue",])
 ```
 
-It's such a common method that there are many functions in different packages for calculating PCA. Base R functions `prcomp` or `princomp` compute PCA, and return output in a format that can be used by the `factoextra` package.
+It's such a common method that there are many functions in different packages for calculating PCA. Base R functions `prcomp` or `princomp` compute PCA, and return output in a format that can be used by the `factoextra` [@factoextra] package.
 
 Let's use `factoextra` to create a scree plot-- a visualization of the `get_eigenvalue` table, the same 'importance' table given by rda summary above. This plot shows how much each 'principal component' explains variances in the dataset.
 
@@ -544,7 +544,7 @@ fviz_screeplot(
 **Correspondence Analysis**
 </h4>
 
-Correspondence analysis uses Chi-squared distance whereas PCA uses Euclidean distance. CA emphasizes relative patterns of composition (ratios amongst the multiple variables within each sample) while PCA would more emphasize patterns in magnitudes across samples. Choosing the proper method is a nuanced task though, beyond the scope of this lab. Here we will just look at two variations of CA: detrended and canonical correspondence analysis.
+Correspondence analysis (CA) uses Chi-squared distance whereas PCA uses Euclidean distance. CA emphasizes relative patterns of composition (ratios amongst the multiple variables within each sample) while PCA would more emphasize patterns in magnitudes across samples. Choosing the proper method is a nuanced task though, beyond the scope of this lab. Here we will just look at two variations of CA: detrended and canonical correspondence analysis.
 
 ```{r}
 ## detrended
@@ -681,7 +681,7 @@ names(df0)
 
 Before jumping into the analysis, take a look at a plot of the dissimilarities:
 
-```{r}
+```{r, fig.height= 15, fig.width = 15}
 df <- tibble::column_to_rownames(df0, "cities")
 distance_mat <- dist(df, method = "euclidean")
 fviz_dist(
@@ -691,7 +691,7 @@ fviz_dist(
 )
 ```
 
-```{r}
+```{r, fig.width = 15}
 ## hierarchical clustering
 cities_hclus <- hclust(distance_mat, "complete")
 fviz_dend(cities_hclus, cex = 0.5)
