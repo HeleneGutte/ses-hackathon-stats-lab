@@ -9,7 +9,7 @@ csl: nature.csl
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 7, out.width = "80%")
 
 ## palette based on website styling
 pal <- c(
@@ -35,7 +35,6 @@ pal <- c(
 [5. Group comparison](#group-comp) <br>
 [6. Regression models](#reg) <br>
 [7. Intro to some multivariate methods](#multivariate) <br>
-[8. A few notes on time series](#time-series) <br>
 [9. References](#ref) <br>
 
 <br>
@@ -72,7 +71,7 @@ head(penguins)
 
 Before even starting to explore the data set you should be aware of the different data types you are working with. In the penguins data set we can find two different types of data: discrete or categorical data and continuous data. Discrete data are classified in penguins as factors (e.g. species, island and sex). The other variables are continuous and belong either to the class double or integer. 
 
-<p style="color:#364552; background-color:#a0c0c4"> 
+<p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("star")` **Tip 1: Check for missing values or potential outliers using the `summary()` function. Depending on your dataset, missing values can look differently. Common notations are "NA", ".", "999" or " " (just a blank space). Addressing missing values can be important for example when filtering your data as 999 is a numerical value. Other programmes, such as STATA, consider "." as infinity. <br> Outliers are exceptionally large or small values that "stick out" compared to the other observations. They can point at errors in the data collection or in the transfer of the data to the database. However, they can be naturally occurring (e.g., think about an income distribution with only few millionaires). Your hypothesis should guide you on how to handle outliers. **
 </p>
 
@@ -92,7 +91,7 @@ mean(a_vector)
 
 ## Framing a research question {#frame-rq}
 
-We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context as outlined in the book "The Routledge handbook of research emthods fpr social-ecological systems [@biggs2021routledge] (even though this is a solely ecological data set, the concepts can be transferred to the SES context).  
+We want to use the palmer penguins data to show how to answer some common questions, applied in a SES context as outlined in the book "The Routledge handbook of research methods for social-ecological systems [@biggs2021routledge] (even though this is a solely ecological data set, the concepts can be transferred to the SES context).  
 The basic research questions driving the exploration are: <br>
 
 (i) What are differences / similarities between the states (penguin species)? <br>
@@ -127,7 +126,7 @@ ggpubr::ggarrange(box_bill, hist_bill, ncol = 2)
 
 Above you see two different visualizations of the same variable (there are several ways to arrange two or more plots together, above you see a simple way to specify that both plots should be arranged together in two columns using the ggpubr package [@ggpubr]). The plot on the left is a **boxplot** and on the right is a **histogram**. Think about which one you like more and why? What are possible advantages of each visualisation?
 
-<p style="color:#333333; background-color:#d3a95a"> 
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("book-open")` **Exercise 1: Explore the other variables on your own. Try to figure out which penguin species has the highest body mass (in g). **
 </p>
 
@@ -142,7 +141,7 @@ Following the steps outlined in Chapter 18 (`SES Problems and Questions`) we wil
 
 Both steps are part of the descriptive statistics used to summarise the data set. R provides several function for this task. First we calculate the mean bill length per species and its standard deviation (sd). The mean is a measure for the central tendency and the standard deviation is a measure of the variability.  
 
-<p style="color:#364552; background-color:#a0c0c4"> 
+<p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("star")` **Tip 2: If you calculate a mean you should always provide a measure for the variation within the data, e.g. the standard deviation, the standard error or the variance. If your standard deviation is small, the variation around the mean is small, i.e., all values are quite close to the mean. Without the variation a mean is meaningless. **
 </p>
 
@@ -169,7 +168,7 @@ sd(penguins[penguins$species == "Adelie", ]$bill_length_mm, na.rm = TRUE)
 
 For non-parametric and discrete data it is more common to use parameters such as the median or quartiles. It is also common to use the median in case of skewed data. Skewed data implies that your data is not normally distributed (no bell shape) but that it has a "tail" which is longer on the left (more values smaller than the mean) or right (more values higher than the mean). 
 
-<p style="color:#333333; background-color:#d3a95a"> 
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("book-open")` **Exercise 2: Calculate the median bill length per species and compare it to the mean values. Is there a difference? Can you explain why there is a difference (or not)? **
 </p>
 
@@ -177,7 +176,7 @@ For non-parametric and discrete data it is more common to use parameters such as
 
 Another part of descriptive statistics is to identify correlations between different variables. 
 
-<p style="color:#364552; background-color:#a0c0c4"> 
+<p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("star")` **Tip 3: Correlation ≠ Causation! This is one of the most important things to keep in mind when doing data analysis! Therefore, you should always be careful in your wording when reporting relationships. Avoid sentences like "Higher values of X mean higher values of Y". Rather use "Higher values of X go along with higher values of Y". **
 </p>
 
@@ -192,7 +191,7 @@ ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
 The points scatter over the entire plot, but it seems like there is a slightly positive correlation between bill length and bill depth. We can validate this by using a correlation test such as Pearson´s correlation coefficient test. This test is a parametric test, so we have to check that both our variables are normally distributed (their histograms should have a bell-shape).
 
 
-<p style="color:#364552; background-color:#a0c0c4"> 
+<p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("star")`**Tip 4: Always check the assumptions of your test, before applying any statistics! Common assumptions are normal distribution of the data or variance homogeneity.** 
 </p>
 
@@ -230,7 +229,7 @@ cor.test(x = adelie$bill_length_mm, y = adelie$bill_depth_mm)
 ```
 This output tells us that R is confident that there is a correlation (p-value < 0.05), but it is a rather weak correlation (the correlation coefficient is closer to zero than to 1 or -1). 
 
-<p style="color:#333333; background-color:#d3a95a"> 
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("book-open")`**Exercise 3: Calculate the correlation between bill length and bill depth for the other two species and across all species. Remember to check for normality of both variables, if one of them is not normally distributed you have to choose another test (just google for non-parametric correlation test). **
 </p>
 
@@ -242,7 +241,7 @@ If you want to investigate the difference between two (or more) groups you usual
 There are several other tests for group comparisons aimed at different types of data, e.g. the t-Test is suitable for normally distributed data, thus if you have non-parametric data you have to use another test (see page 260 in The Routledge handbook [@biggs2021routledge]). <br>
 If you want to compare more than two groups you have to use other tests again. For normal distributed data you can use the ANOVA, for non-parametric data the Kruskal-Wallis or the Chi-squared test can be applied. 
 
-<p style="color:#364552; background-color:#a0c0c4"> 
+<p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("star")` **Tip 5: Decision trees can help you find the correct test / analysis for your data and research question. For example this one: [`decision tree`](https://www.central7.net/wp-content/uploads/2015/09/stats_flow_chart_v2014.gif).**
 </p>
 
@@ -290,7 +289,7 @@ From the output we can conclude that there is a significant difference in bill l
 TukeyHSD(anova_penguins)
 ```
 
-<p style="color:#333333; background-color:#d3a95a"> 
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("book-open")`**Exercise 4: Make a comparison across species for one of the other variables, you can choose which one. Remember to check the assumptions before doing an ANOVA, if they cannot be fulfilled you have to use another test. A decision tree can help you to find a suitable test.**
 </p>
 
@@ -316,7 +315,7 @@ ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
   labs(x = "Body mass (g)", y = "Bill length (mm)", colour = "Species")
 ```
 
-The plot suggests that we can deny the Nullhypothesis, but we will verify this applying a regression model to the data. <br>
+The plot suggests that we can deny the Null hypothesis, but we will verify this applying a regression model to the data. <br>
 There are several kinds of regression models. The most simple one is a linear model (lm), it is suitable for continuous normal distributed data. For non linear data one can transform the data to get a linear distribution or use a generalised linear model (glm), which allows fitting to non-linear distributions. <br>
 Again before applying any statistics we have to check the underlying assumptions. For a linear model normally distributed data are required. 
 
@@ -356,7 +355,7 @@ The second plot shows a normal Q-Q plot, we already know this plot and how it id
 The third plot shows the standardized residuals, the same logic is applied as for the first plot. If you detect any patterns, think about what could be missing in your analysis. <br>
 The last plot helps you to identify outliers. Outliers would appear outside the Cooks distance (dashed red line), but here none have been identified by the algorithm. Otherwise we would have a few options: <br>
 
-(i) think about possible explanations for the outliers. Did something unregular happened during the data sampling or processing of the samples in the lab? <br>
+(i) think about possible explanations for the outliers. Did something irregular happen during the data sampling or processing of the samples in the lab? <br>
 (ii) Transform the data, e.g. with a log-transformation <br>
 (iii) If really necessary exclude the outlier (but only if none of the other solutions helped or if you have strong proof that the value is wrong) <br>
 
@@ -380,50 +379,260 @@ ggplot(data = penguins, aes(x = body_mass_g, y = bill_length_mm))+
 
 
 
-<p style="color:#333333; background-color:#d3a95a"> 
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("book-open")` **Exercise 5: Make a regression analysis for the relationship between bill length and body weight regardless of the species (use the entire data set at once, remember to check for normality). Think about another research question that you can investigate and apply a regression analysis, be clear about your hypothesis and the corresponding Null-hypothesis. **
 </p>
 
+<br>
 
-## Multivariate Analysis or Ordinal Methods {#multivariate}
-
-Approaches in this category attempt to measure how similar two or more objects are, given their collective characteristics.
-
-Explore PCA, kmeans, and clustering below using the `vegan` package [@vegan] and a data set it contains called `dune`. For an in-depth tutorial on multivariate analysis and ordinal methods with the `vegan` R packages, see [this vignette](https://www.mooreecology.com/uploads/2/4/2/1/24213970/vegantutor.pdf)
-
-- Relations between features
-- Which places or groups have similar characteristics (multivariate analysis)
-- How do features change across years (time series analysis)
-
-<p style="color:#333333; background-color:#d3a95a"> 
-`r shiny::icon("book-open")` **Exercise 6: Before beginning, can you apply what you learned above to familiarize yourself with the data types and data set structure? What are the variables in this data set (hint: check the R documentation)?**
-</p>
+## Multivariate Analysis {#multivariate}
 
 ```{r}
 library(vegan)
+library(factoextra)
+```
 
-## using dune dataset
+
+Approaches in this category attempt to measure co-occurrence or how similar two or more objects are, given a set of characteristics. The general idea is to look at 'distance' or 'dissimilarity' in multidimensional space where distance can be quantified using a variety of different metrics or indices. Euclidean and Taxicab (aka Manhattan) are two common 'distance' metrics; Bray-Curtis dissimilarity is one typical index used in ecology. 
+
+To investigate similarities between objects within a multivariate dataset, it is often necessary to first reduce dimensionality either by feature selection (strategically, algorithmically choosing the most meaningful variables) or feature extraction (collapsing/agglomerating original features into new, meaningful features). We'll explore 4 methods from the second category.
+
+The next exercises will use the `vegan` [@vegan] package and a dataset it contains called `dune`.
+
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
+`r shiny::icon("book-open")` **Exercise 6: Before beginning, can you apply what you learned above in chapters 2-5 to familiarize yourself with the data types and data set structure? What are the variables in these data sets (hint: check the R documentation)? Which are the most informative or useful metrics?**
+</p>
+
+### Part 1: Dune Data 
+
+```{r}
 data(dune) 
 data(dune.env)
 
-## PCA and kmeans
-fit <- kmeans(x = dune[,-1], centers = 3, iter.max = 1000)
-table(fit$cluster)
-pca <- prcomp(dune[,-1], scale = TRUE)
-biplot(pca, scale = 0)
+head(dune.env)
+summary(dune.env)
 
-## clustering
-dis <- vegdist(dune)
+## tibbles print the data in a nice format in the console,
+## with data type listed under the column name
+head(tibble(dune))
+```
+
+How does the data look like? Let's create some plots that look at number of species per site versus one categorical and one numeric variables of the `dune.env` dataset, and another plot looking at which species/how many appear at each site.
+
+```{r}
+plotdune <- cbind(dune, dune.env) %>% 
+  rowid_to_column(var = "site") %>% 
+  pivot_longer(
+    cols = !matches("site|A1|Moisture|Management|Use|Manure"), 
+    names_to = "species",
+    values_to = "count"
+  )
+
+plotdune %>% 
+  mutate(present = ifelse(count > 0, 1, 0)) %>% 
+  ## include A1, Moisture, Management in grouping to 
+  ## keep in them in the summarized output
+  group_by(site, A1, Moisture, Management) %>% 
+  summarise(n_species = sum(present)) %>% 
+  ungroup() %>% 
+  ## alternatively, plot vs Moisture instead of A1 soil horizon
+  # ggplot(aes(x = Moisture, y = n_species, color = Management, fill = Management)) + 
+  ggplot(aes(x = A1, y = n_species, color = Management, fill = Management)) + 
+  geom_point(size = 3, shape = 22, alpha = 0.8) +
+  scale_color_manual(values = as.character(pal[1:4])) +
+  scale_fill_manual(values = as.character(pal[1:4])) +
+  # labs(x = "Moisture", y = "Number Species") +
+  labs(x = "A1 Soil Horizon Thickness", y = "Number Species")
+
+
+## tile plots are sometimes a nice way to 
+## look at these kinds of data
+ggplot(plotdune) + 
+  geom_tile(aes(x = site, y = species, fill = count)) + 
+  labs(x = "Site", y = "Species", fill = "Number \nObservations \nat Site") +
+  scale_fill_gradient2(low = pal[3], mid = pal[2], high = pal[1], midpoint = 4)
+```
+
+<br>
+
+Now, let's experiment with clustering, PCA (principal components analysis), correspondence analysis (CA), and non-metric multidimensional scaling (n-MDS).
+
+<h4 style="background-color:#8bc1bfc4; color:#ffffff; padding:8px; font-family:monospace;"> 
+**Hierarchical Clustering**
+</h4>
+
+```{r}
+## attach site info to input matrix
+## as rownames
+dune_name_sites <- dune.env %>% 
+  dplyr::mutate(site = paste(
+    Use, Management, "\n", 
+     "moisture", Moisture, "\n", 
+    "manure", Manure,
+    "soil", A1
+  )) %>% 
+  dplyr::select(site) %>% 
+  cbind(dune) %>% 
+  remove_rownames() %>% 
+  column_to_rownames(var = "site")
+
+## do the clustering
+dis <- vegdist(dune_name_sites)
 clus_single <- hclust(dis, "single")
 cluc_complete <- hclust(dis, "complete")
 cluc_average <- hclust(dis, "average")
 
-plot(cluc_complete)
+## plot using base plot or factoextra
+# plot(cluc_average)
+fviz_dend(cluc_average, cex = 0.5)
 ```
 
+<h4 style="background-color:#8bc1bfc4; color:#ffffff; padding:8px; font-family:monospace;"> 
+**Principal Components Analysis**
+</h4>
+
+Principal components analysis (PCA), and correspondence analysis (CA) are in a category called eigenvector methods.
+These methods transform (rotate and project) the original data onto a new coordinate system constructed using eigenvectors; PCA aims to minimize redundancy and maximize variance to summarize the data in the most helpful (pattern-illuminating) way, so that original characteristics can be reconstructed, but also different features can be differentiated/distinguished.
+
+```{r}
+pca_vegan <- rda(dune)
+
+## look at the results, particularly prop explained 
+## per component, and associated eigenvalues
+t(summary(pca_vegan)$cont$importance)
+
+## plot
+## change choices argument to look at other PCs
+## scaling option can be species, site or symmetric
+biplot(
+  pca_vegan, 
+  choices = c(1, 2),
+  scaling = "symmetric",
+  col = c(pal["mustard"], pal["lightgreen"])
+)
+## plotting without arrows...
+# plot(pca_vegan, type = "n", scaling = "symmetric")
+# text(pca_vegan, col = pal["mustard"], cex = 0.7, scaling = "symmetric")
+# text(pca_vegan, "species", col = pal["lightgreen"], cex = 0.5, scaling = "symmetric")
+```
+
+Total inertia is by default the variance, and also equals the sum of all eigenvalues.
+
+```{r}
+pca_vegan
+sum(apply(dune, 2, var))
+sum(summary(pca_vegan)$cont$importance["Eigenvalue",])
+```
+
+It's such a common method that there are many functions in different packages for calculating PCA. Base R functions `prcomp` or `princomp` compute PCA, and return output in a format that can be used by the `factoextra` package.
+
+Let's use `factoextra` to create a scree plot-- a visualization of the `get_eigenvalue` table, the same 'importance' table given by rda summary above. This plot shows how much each 'principal component' explains variances in the dataset.
+
+```{r}
+pca_stat <- prcomp(dune)
+get_eigenvalue(pca_stat)
+fviz_screeplot(
+  pca_stat, 
+  addlabels = TRUE,
+  barfill = pal["lightestgreen"],
+  barcolor = pal["lightblue"],
+  linecolor = pal["bluegreen"]
+)
+```
+
+<h4 style="background-color:#8bc1bfc4; color:#ffffff; padding:8px; font-family:monospace;"> 
+**Correspondence Analysis**
+</h4>
+
+Correspondence analysis uses Chi-squared distance whereas PCA uses Euclidean distance. CA emphasizes relative patterns of composition (ratios amongst the multiple variables within each sample) while PCA would more emphasize patterns in magnitudes across samples. Choosing the proper method is a nuanced task though, beyond the scope of this lab. Here we will just look at two variations of CA: detrended and canonical correspondence analysis.
+
+```{r}
+## detrended
+dca <- decorana(dune)
+plot(dca, choices = c(1, 2), cex = 0.6, col = c(pal["mustard"], pal["lightgreen"]))
+```
+
+```{r}
+## canonical
+cca <- cca(dune)
+plot(cca, type = "n", scaling = "symmetric")
+text(cca, col = pal["mustard"], cex = 0.7, scaling = "symmetric")
+text(cca, "species", col = pal["lightgreen"], cex = 0.5, scaling = "symmetric")
+```
+
+<h4 style="background-color:#8bc1bfc4; color:#ffffff; padding:8px; font-family:monospace;"> 
+**Non-metric Multidimensional Scaling**
+</h4>
+
+Non-metric multidimensional scaling needs dissimilarities as input, so first calculate the Bray-Curtis dissimilarity index, which is one of the recommended for indices for abundance data, and the default of the `vegdist` function:
+
+```{r}
+dis <- vegdist(dune)
+# print(dis)
+# summary(dis)
+# class(dis)
+```
+
+Next, we apply non-metric multidimensional scaling using the `monoMDS` function. This (non-linearly) maps the dissimilarity to ordination space i.e. it ranks the objects/samples (in this case the sites) to reflect how close or distant they are to one another.
+
+```{r}
+mds <- monoMDS(dis)
+print(mds)
+```
+
+The `stressplot` function creates a Shepard plot showing ordination distances vs community dissimilarities. Stress value (a measure of goodness-of-fit) reflects how well the ordering summarizes the observed dissimilarities/distances.
+
+```{r}
+stressplot(
+  mds, dis, 
+  p.col = pal["lightblue"], l.col = pal["mustard"], 
+  lwd = 3
+)
+```
+
+The default number of dimensions for the MDS function is k=2. With hyperparameters you should always test a range of values to pick the optimal one, so here you would want to explore and pick the dimension value based on the stress values. Typically stress will decrease with number of dimensions. Pick as few dimensions as necessary. Stress values less than 0.1 are sufficient,  less than 0.05 are excellent.
+
+```{r}
+stresses <- tibble(
+  `Number of Dimensions` = 1:10, 
+  `Stress` = unlist(lapply(1:10, function(x){monoMDS(dis, k = x)$stress}))
+)
+ggplot(stresses, aes(x = `Number of Dimensions`, y = `Stress`)) +
+  geom_col(fill = pal["lightblue"]) +
+  geom_text(aes(label = `Number of Dimensions`))
+```
+
+To create a plot visualizing these final results, we'll need to give the original community matrix to the metaMDS function, which uses the monoMDS to do the actual scaling, but does some additional optimization steps (for details see the R documentation).
+
+```{r}
+meta_nmds <- metaMDS(dune, k = 3, autotransform = FALSE, distance="bray")
+ordiplot(meta_nmds, type = "n")
+orditorp(meta_nmds, display = "species", col = pal["lightgreen"], air = 0.8)
+orditorp(meta_nmds, display = "sites", col = pal["mustard"], cex = 0.8, air = 0.8)
+
+## you can also use ordiplot with the original monoMDS
+## notice how the numbers are in a similar pattern but horizontally flipped
+# mds <- monoMDS(dis, k = 3)
+# ordiplot(mds, type = "t")
+```
+
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
+`r shiny::icon("book-open")` **Exercise 7: Given all the exploratory results above, which survey sites seem to have similar species composition? What are some next steps you would take if you wanted to create a formal analysis?**
+</p>
+
+<br>
+
+[**See this great lab on ordination methods to learn more**](https://ourcodingclub.github.io/tutorials/ordination/), including a tutorial on how to link environmental variables with ordination axes to investigate which environmental variables are driving the observed differences in species composition.
+
+For an in-depth, more nuanced tutorial on multivariate analysis and ordinal methods with the `vegan` R package, see [**this vegan  vignette tutorial**](https://www.mooreecology.com/uploads/2/4/2/1/24213970/vegantutor.pdf).
+
+<br>
+
+### Part 2: Eurostat Cities Data
 
 Now, use some data from [eurostat cities statistics database](https://ec.europa.eu/eurostat/web/cities/data/database) [@eurostat] for the following exercises, and test similarities across a number of metro-areas in Europe.
-```{r cities dataset, eval = FALSE, messages = FALSE}
+
+```{r}
 library(eurostat)
 var_ids <- c(
   "urb_clivcon", "urb_cenv", "urb_ctran", "urb_cecfi",
@@ -436,78 +645,91 @@ city_data <- bind_rows(lapply(var_ids, function(i){
 ## transform the data into what we need 
 ## for hierarchical clustering and PCA approaches
 city_data_wide <- city_data %>% 
-  mutate(nm = str_extract(str_replace_all(str_to_lower(indic_ur), "[^[:alnum:]]", "_"), "[a-z_0-9]+")) %>% 
-  select(nm, values, time, cities) %>% 
-  pivot_wider(id_cols = c("time", "cities"), names_from = nm, values_from = values) %>% 
+  dplyr::mutate(nm = str_extract(
+    str_replace_all(str_to_lower(indic_ur), "[^[:alnum:]]", "_"), 
+    "[a-z_0-9]+"
+  )) %>%
+  dplyr::select(nm, values, time, cities) %>% 
+  tidyr::pivot_wider(id_cols = c("time", "cities"), names_from = nm, values_from = values) %>% 
   ## filter to one year and exclude country level data
-  filter(time == 2014, !cities %in% c(eu_countries$name, "Schweiz/Suisse"))
+  dplyr::filter(time == 2014, !cities %in% c(eu_countries$name, "Schweiz/Suisse"))
 ```
 
 <br>
 
-<p style="color:#364552; background-color:#a0c0c4"> 
+<p style="background-color:#a0c0c4; color:#ffdf9e; padding:8px; padding-bottom:12px"> 
 `r shiny::icon("star")` **Tip 6: Variables should be on quasi-identical scale, otherwise variables with the largest range will dominate the outcome; normalize the data (usually between zero and one) to avoid this.**
 </p>
 
-<br>
-
-```{r, eval = FALSE}
-## remove variables and cities where have NAs mostly
-keep_cols <- names(colSums(is.na(city_data_wide))[which(colSums(is.na(city_data_wide)) < 370)])
-
+```{r}
 ## a function to rescale data between zero and one
 ## try both ways: with and without rescaling, and see what happens
 rescale_fun <- function(x) {
   rng <- range(x, na.rm = TRUE)
   (x - rng[1]) / (rng[2] - rng[1])
 }
+## remove variables and cities where have NAs mostly
+keep_cols <- names(colSums(is.na(city_data_wide))[which(colSums(is.na(city_data_wide)) < 370)])
 df0 <- city_data_wide %>% 
-  select(all_of(keep_cols)) %>% 
-  select(-time) %>% 
+  dplyr::select(all_of(keep_cols)) %>% 
+  dplyr::select(-time) %>% 
   .[complete.cases(.),] %>% 
-   mutate(across(where(is.numeric), rescale_fun))
+  dplyr::mutate(across(where(is.numeric), rescale_fun))
+
+names(df0)
 ```
 
+Before jumping into the analysis, take a look at a plot of the dissimilarities:
 
-```{r hierarchical clustering, eval = FALSE}
+```{r}
 df <- tibble::column_to_rownames(df0, "cities")
 distance_mat <- dist(df, method = "euclidean")
-
-## fitting Hierarchical clustering Model
-set.seed(240)
-modHclus <- hclust(distance_mat, method = "average")
-
-## plotting dendrogram
-library(factoextra)
-fviz_dend(modHclus, cex = 0.3)
+fviz_dist(
+  distance_mat, 
+  gradient = list(low = pal[3], mid = "white", high = pal[2]),
+  lab_size = 8
+)
 ```
 
-To plot dendrograms we use the package factoextra [@factoextra].
-
-```{r pca, eval = FALSE}
-df <- df0 %>% 
-  pivot_longer(cols = !matches("cities")) %>% 
-  pivot_wider(names_from = cities, values_from = value) %>% 
-  select(-name)
-
-fit <- kmeans(df[,-1], 3, iter.max = 1000)
-pca <- prcomp(df[,-1], scale = TRUE)
-biplot(pca, scale = 0, cex = 0.3)
+```{r}
+## hierarchical clustering
+cities_hclus <- hclust(distance_mat, "complete")
+fviz_dend(cities_hclus, cex = 0.5)
 ```
 
-
-## Change over Time {#time-series}
-
-These sorts of analyses can be especially critical for risk assessment, and often necessary to identify causality (though causality cannot be detected from all time series!)
-
-```{r }
-# install.packages("MARSS")
-library(MARSS)
-## for more info see the github page for the package
-## https://nwfsc-timeseries.github.io/MARSS/
-
-
+```{r, eval=FALSE}
+## principal component analysis
+cities_pca <- prcomp(df)
+fviz_pca_ind(cities_pca, col.ind = pal["lightblue"], repel = TRUE)
 ```
+
+```{r, eval=FALSE}
+## correspondence analysis
+cities_cca <- cca(df)
+plot(cities_cca, display = "wa")
+```
+
+```{r, eval=FALSE}
+## non-metric multidimensional scaling
+cities_dis <- vegdist(df)
+cities_stresses <- tibble(
+  `Number of Dimensions` = 1:10, 
+  `Stress` = unlist(lapply(1:10, function(x){monoMDS(cities_dis, k = x)$stress}))
+)
+ggplot(cities_stresses, aes(x = `Number of Dimensions`, y = `Stress`)) +
+  geom_col(fill = pal["lightestgreen"], color = pal["mustard"]) +
+  geom_text(aes(label = `Number of Dimensions`))
+
+cities_nmds <- metaMDS(df, k = 4, autotransform = FALSE, trace = FALSE, distance = "bray")
+ordiplot(cities_nmds, display = "sites", type = "t", cex = 0.5)
+```
+
+<p style="background-color:#d3a95a; color:#f4fff9; padding:8px; padding-bottom:12px"> 
+`r shiny::icon("book-open")` **Exercise 8: Recalling Tip 5, decision trees can be super helpful in choosing the best statistical approach to use in a certain case. Find and/or compile a decision tree branching among the multivariate methods you have explored here.**
+</p>
+
+<br>
 
 ## References {#ref}
 
+<br>
